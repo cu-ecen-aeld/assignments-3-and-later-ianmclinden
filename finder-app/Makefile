@@ -18,6 +18,9 @@ OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 
 CC = $(CROSS_COMPILE)gcc
 
+DESTDIR ?= $(HOME)
+INSTALL_INCLUDES ?= finder-test.sh finder.sh autorun-qemu.sh conf/username.txt conf/assignment.txt
+
 # ==== Build Profiles =========================================================
 
 .PHONY: all clean
@@ -41,6 +44,15 @@ $(BUILD_DIR)/$(EXEC): $(OBJS)
 $(BUILD_DIR)/%.c.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
+
+# ==== Install ================================================================
+
+.PHONY: install
+install: $(BUILD_DIR)/$(EXEC) $(INSTALL_INCLUDES)
+ifdef DESTDIR
+	install -m 0755 $(BUILD_DIR)/$(EXEC) $(DESTDIR)/
+	for f in $(INSTALL_INCLUDES); do install -Dm 0755 $$f $(DESTDIR)/$$f; done
+endif
 
 # ==== Cleanup ================================================================
 
