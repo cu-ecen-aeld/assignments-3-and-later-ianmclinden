@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Tester script for assignment 1 and assignment 2
 # Author: Siddhant Jajoo
 
@@ -32,7 +32,11 @@ echo "Writing ${NUMFILES} files containing string ${WRITESTR} to ${WRITEDIR}"
 rm -rf "${WRITEDIR}"
 
 # create ${WRITEDIR} if not assignment1
-assignment="$(cat "${CURDIR}/../conf/assignment.txt")"
+ASSIGNFILE="${CURDIR}/../conf/assignment.txt"
+if [ ! -f "${ASSIGNFILE}" ]; then
+	ASSIGNFILE="${CURDIR}/conf/assignment.txt"
+fi
+assignment="$(cat "${ASSIGNFILE}")"
 
 if [ "$assignment" != 'assignment1' ]; then
 	mkdir -p "${WRITEDIR}"
@@ -61,7 +65,7 @@ rm -rf /tmp/aeld-data
 
 set +e
 
-if grep -q "${MATCHSTR}" <<< "${OUTPUTSTRING}"; then
+if echo "${OUTPUTSTRING}" | grep -q "${MATCHSTR}"; then
 	echo "success"
 	exit 0
 else
