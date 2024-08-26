@@ -5,12 +5,20 @@
 set -e
 set -u
 
-CURDIR="$(dirname -- "$0" || true)"
-readonly CURDIR="${CURDIR:-"."}"
+CURDIR="$(realpath "$(dirname "$0")" || echo ".")"
 NUMFILES=10
 WRITESTR=AELD_IS_FUN
 WRITEDIR=/tmp/aeld-data
-username=$(cat conf/username.txt)
+CONFDIRS=""
+[ -d "/etc/finder-app/conf/" ] && CONFDIRS="${CONFDIRS} /etc/finder-app/conf/"
+[ -d "${CURDIR}/conf/" ] && CONFDIRS="${CONFDIRS} ${CURDIR}/conf/"
+[ -d "${CURDIR}/../conf/" ] && CONFDIRS="${CONFDIRS} ${CURDIR}/../conf/"
+USERNAMEFILE="$(find ${CONFDIRS} -name "username.txt" -print -quit)"
+username=$(cat "${USERNAMEFILE}")
+ASSIGNMENTFILE="$(find ${CONFDIRS} -name "assignment.txt" -print -quit 2>/dev/null)"
+assignment="$(cat "${ASSIGNMENTFILE}")"
+[ -n "$(which writer)" ] && WRITER="writer" || WRITER="${CURDIR}/writer.sh"
+[ -n "$(which finder)" ] && FINDER="finder" || FINDER="${CURDIR}/finder.sh"
 
 if [ $# -lt 3 ]; then
 	echo "Using default value ${WRITESTR} for string to write"
@@ -32,12 +40,6 @@ echo "Writing ${NUMFILES} files containing string ${WRITESTR} to ${WRITEDIR}"
 rm -rf "${WRITEDIR}"
 
 # create ${WRITEDIR} if not assignment1
-ASSIGNFILE="${CURDIR}/../conf/assignment.txt"
-if [ ! -f "${ASSIGNFILE}" ]; then
-	ASSIGNFILE="${CURDIR}/conf/assignment.txt"
-fi
-assignment="$(cat "${ASSIGNFILE}")"
-
 if [ "$assignment" != 'assignment1' ]; then
 	mkdir -p "${WRITEDIR}"
 
@@ -55,10 +57,10 @@ fi
 # make
 
 for i in $(seq 1 "${NUMFILES}"); do
-	"${CURDIR}/writer" "${WRITEDIR}/${username}$i.txt" "${WRITESTR}"
+	${WRITER} "${WRITEDIR}/${username}$i.txt" "${WRITESTR}"
 done
 
-OUTPUTSTRING="$("${CURDIR}/finder.sh" "${WRITEDIR}" "${WRITESTR}")"
+OUTPUTSTRING="$(${FINDER} "${WRITEDIR}" "${WRITESTR}")"
 
 # remove temporary directories
 rm -rf /tmp/aeld-data
