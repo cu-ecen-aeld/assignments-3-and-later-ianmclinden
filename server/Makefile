@@ -54,7 +54,7 @@ $(BUILD_DIR)/%.c.o: %.c
 # ==== Install ================================================================
 
 .PHONY: install install_bins install_init
-install: install_bins
+install: install_bins install_init
 
 install_bins: $(INSTALL_BINS)
 ifdef DESTDIR
