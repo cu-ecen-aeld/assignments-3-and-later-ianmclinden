@@ -1,0 +1,30 @@
+#!/bin/sh
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/bin/aesdsocket
+NAME=aesdsocket
+DESC=aesdsocket
+
+if [ ! -x "${DAEMON}" ]; then
+   exit 0
+fi
+
+. /lib/lsb/init-functions
+
+case "$1" in
+	start)
+		log_daemon_msg "Starting $DESC" "$NAME"
+		start-stop-daemon --start --quiet --exec $DAEMON -- -d 2>/dev/null
+      exit $?
+		;;
+	stop)
+		log_daemon_msg "Stopping $DESC" "$NAME"
+      # Default signal is SIGTERM
+		start-stop-daemon --stop --quiet --name $NAME --retry 5
+      exit $?
+		;;
+	*)
+		echo "Usage: $NAME {start|stop}" >&2
+		exit 1
+		;;
+esac
