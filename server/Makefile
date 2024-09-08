@@ -17,6 +17,7 @@ CC ?= gcc
 CFLAGS ?= -Wall -Werror -Wextra -Wcast-align -Wcast-qual -Winit-self \
 		  -Wlogical-op -Wshadow -Wsign-conversion -Wswitch-default -Wundef \
 		  -Wunused -pedantic
+LDFLAGS += -lrt -lpthread
 
 # Be GNU-like
 DESTDIR ?= /

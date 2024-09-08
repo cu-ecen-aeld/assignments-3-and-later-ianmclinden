@@ -16,12 +16,13 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     -Wunused -pedantic
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:DEBUG>)
+target_link_libraries(${PROJECT_NAME} rt pthread)
 
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}
     DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/aesdsocket-start-stop
-    DESTINATION /${CMAKE_INSTALL_SYSCONFDIR}/init.d/ # Ignore prefix
+    DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/init.d/
     RENAME S99${PROJECT_NAME}
 )
